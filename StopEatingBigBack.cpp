@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -24,14 +25,44 @@ void suggestFoodGroups(int remainingCalories) {
     }
 }
 
-int main() {
-    int dailyGoal = 2000; // Daily calorie goal (could be adjusted)
-    int totalCalories = 0;
-    string food;
+// Function to get a valid calorie input from the user
+int getCalorieInput(const string& food) {
     int calories;
+    while (true) {
+        cout << "Enter the calorie amount for " << food << ": ";
+        cin >> calories;
 
+        if (cin.fail() || calories < 0) {
+            cin.clear();  // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
+            cout << "Invalid input. Please enter a valid non-negative number." << endl;
+        } else {
+            cin.ignore(); // To ignore the newline character left by cin
+            return calories;
+        }
+    }
+}
+
+int main() {
+    int dailyGoal;
     cout << "Welcome to the Calorie Tracker!" << endl;
-    cout << "Your daily calorie goal is: " << dailyGoal << " calories." << endl;
+    cout << "Enter your daily calorie goal: ";
+    
+    while (true) {
+        cin >> dailyGoal;
+        if (cin.fail() || dailyGoal <= 0) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a positive number for your calorie goal: ";
+        } else {
+            cin.ignore();
+            break;
+        }
+    }
+
+    int totalCalories = 0;
+    vector<pair<string, int>> foodLog;
+    string food;
 
     while (true) {
         cout << "\nEnter the food you ate (or type 'done' to finish): ";
@@ -41,12 +72,10 @@ int main() {
             break;
         }
 
-        cout << "Enter the calorie amount for " << food << ": ";
-        cin >> calories;
-        cin.ignore(); // To ignore the newline character left by cin
-
+        int calories = getCalorieInput(food);
         totalCalories += calories;
-        
+        foodLog.emplace_back(food, calories);
+
         cout << "\nYou have consumed " << totalCalories << " calories so far." << endl;
 
         int remaining = remainingCalories(totalCalories, dailyGoal);
@@ -57,10 +86,15 @@ int main() {
         }
 
         suggestFoodGroups(remaining);
-
     }
 
-    cout << "\nThank you for using the Calorie Tracker!" << endl;
+    // Display summary
+    cout << "\nSummary of your day:" << endl;
+    for (const auto& entry : foodLog) {
+        cout << "- " << entry.first << ": " << entry.second << " calories" << endl;
+    }
+    cout << "Total calories consumed: " << totalCalories << " / " << dailyGoal << endl;
+    cout << "Thank you for using the Calorie Tracker!" << endl;
 
     return 0;
 }
