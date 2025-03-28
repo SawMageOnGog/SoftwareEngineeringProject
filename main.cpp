@@ -3,7 +3,6 @@
 #include "database.h"
 #include "analytics.h"
 #include "csv_utils.h"
-#include "backup_restore.h"
 #include "cli_interface.h"
 
 int main() {
