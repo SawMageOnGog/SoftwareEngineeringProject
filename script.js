@@ -4,8 +4,32 @@ const dailyCalorieGoal = 2000;
 
 // Load saved data from localStorage when the page loads
 window.onload = function() {
+    checkForNewDay();  // Check if it's a new day and reset if necessary
     loadData();
+    updateClock();  // Update the clock immediately on page load
+    setInterval(updateClock, 1000);  // Update the clock every second
 };
+
+function checkForNewDay() {
+    const lastResetDate = localStorage.getItem('lastResetDate');
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+    if (lastResetDate !== currentDate) {
+        // It's a new day, so reset the tracker
+        localStorage.setItem('lastResetDate', currentDate);  // Update the last reset date
+        resetTracker();  // Reset entries and total calories
+    }
+}
+
+function resetTracker() {
+    // Clear entries and total calories
+    entries = [];
+    totalCalories = 0;
+
+    // Save empty state to localStorage
+    localStorage.setItem('entries', JSON.stringify(entries));
+    localStorage.setItem('totalCalories', totalCalories.toString());
+}
 
 function loadData() {
     // Retrieve data from localStorage
@@ -78,7 +102,7 @@ function updateCaloriesLeft() {
 function updateFeedback() {
     const feedbackElement = document.getElementById('feedback');
     if (totalCalories >= dailyCalorieGoal) {
-        feedbackElement.textContent = "You’ve reached your calorie goal! Great job!";
+        feedbackElement.textContent = "STOP EATING BIG BACK! You’ve reached your calorie goal and you shouldn't eat anymore today! Great job!";
     } else if (totalCalories > dailyCalorieGoal * 0.8) {
         feedbackElement.textContent = "You’re almost there! Keep going!";
     } else if (totalCalories > dailyCalorieGoal * 0.5) {
@@ -97,7 +121,7 @@ function suggestFoodGroup() {
     } else if (totalCalories < dailyCalorieGoal * 0.8) {
         suggestedFoodGroupElement.textContent = "Include some whole grains to balance your intake.";
     } else {
-        suggestedFoodGroupElement.textContent = "You’re close to your goal. Drink water and avoid excess sugars.";
+        suggestedFoodGroupElement.textContent = "You can only eat a little more big back, you’re really close to your goal. Drink water and avoid excess sugars.";
     }
 }
 
@@ -113,15 +137,15 @@ function giveTimeBasedAdvice() {
         } else if (caloriesLeft > dailyCalorieGoal * 0.5) {
             timeBasedAdviceElement.textContent = "It’s early! You can afford to eat more, but don't overdo it.";
         } else {
-            timeBasedAdviceElement.textContent = "You’ve eaten a lot already. Pace yourself!";
+            timeBasedAdviceElement.textContent = "Stop eating big back! You’ve eaten a LOT today. Pace yourself!";
         }
     } else if (currentTime >= 12 && currentTime < 18) { // Afternoon (12 PM - 6 PM)
         if (caloriesLeft > dailyCalorieGoal * 0.5) {
-            timeBasedAdviceElement.textContent = "Good afternoon! You’re on track, but don’t eat too much too soon.";
+            timeBasedAdviceElement.textContent = "Good afternoon! You’re on track, but don’t be a big back, slow down a little bit.";
         } else if (caloriesLeft > dailyCalorieGoal * 0.2) {
             timeBasedAdviceElement.textContent = "You’re doing well! Make sure to balance your meals for the rest of the day.";
         } else {
-            timeBasedAdviceElement.textContent = "Slow down a bit. You’re getting close to your goal.";
+            timeBasedAdviceElement.textContent = "Stop eating big back! You’re getting close to your goal. You might finish up with a snack";
         }
     } else { // Evening and Late Night (6 PM - 6 AM)
         if (caloriesLeft > dailyCalorieGoal * 0.5) {
@@ -129,9 +153,25 @@ function giveTimeBasedAdvice() {
         } else if (caloriesLeft > dailyCalorieGoal * 0.2) {
             timeBasedAdviceElement.textContent = "You’re doing great, but be mindful of your calories in the evening.";
         } else {
-            timeBasedAdviceElement.textContent = "It’s getting late. Slow down and make sure you don’t go over your goal.";
+            timeBasedAdviceElement.textContent = "It’s getting late. Don't be a big back, slow down and make sure you don’t go over your goal.";
         }
     }
+}
+
+function updateClock() {
+    // Update the current time
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString();
+    document.getElementById('time').textContent = currentTime;
+
+    // Calculate time left until midnight
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0);  // Set the time to midnight of the current day
+    const timeLeft = midnight - now;  // Time left in milliseconds
+    const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));  // Convert milliseconds to hours
+    const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));  // Convert remaining milliseconds to minutes
+
+    document.getElementById('timeRemaining').textContent = `${hoursLeft} hours and ${minutesLeft} minutes`;
 }
 
 function clearInputs() {
