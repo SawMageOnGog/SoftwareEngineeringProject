@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stop Eating Big Back</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Stop Eating Big Back</h1>
+    <div id="input-section">
+        <input type="text" id="food" placeholder="Food Item">
+        <input type="number" id="calories" placeholder="Calories">
+        <button onclick="addEntry()">Add Entry</button>
+    </div>
+    <h2>Entries</h2>
+    <ul id="entries"></ul>
+    <h3>Total Calories: <span id="totalCalories">0</span></h3>
+    <h3>Total Calories Left: <span id="caloriesLeft">2000</span></h3>
+    <h3 id="feedback"></h3>
+    <h3 id="suggestedFoodGroup"></h3>
+    <h3 id="timeBasedAdvice"></h3>
+    <script src="script.js"></script>
+</body>
+</html>
