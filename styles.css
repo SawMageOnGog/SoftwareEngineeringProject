@@ -1,43 +1,92 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 20px;
     background-color: #f4f4f4;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+h2 {
+    text-align: center; /* Center the "Entries" heading */
+    color: #333;
 }
 
 #input-section {
+    text-align: center;
     margin-bottom: 20px;
 }
 
 input {
     padding: 10px;
     margin: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    font-size: 16px;
+    width: 200px;
 }
 
 button {
-    padding: 10px 15px;
-    background-color: #28a745;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #45a049;
 }
 
-ul {
+ul#entries {
     list-style: none;
     padding: 0;
+    display: flex; /* Use flexbox to align items */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    margin: 0 auto; /* Optional: Ensures the list container itself is centered */
 }
 
-li {
-    background: white;
-    margin: 5px;
+ul#entries li {
+    display: block; /* Stack entries vertically */
     padding: 10px;
+    margin: 5px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    width: auto; /* Ensures the width adjusts to the content */
+    max-width: 400px; /* Optional: Limit the width for longer items */
+}
+
+ul#entries li:hover {
+    background-color: #f0f0f0;
+}
+
+#feedback, #suggestedFoodGroup, #timeBasedAdvice {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#current-time, #time-left {
+    text-align: center;
+    margin-top: 10px;
+}
+
+#current-time p, #time-left p {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+p {
+    text-align: center;
+    font-size: 30px;
+}
+
+#time, #timeRemaining {
+    font-weight: bold;
 }
