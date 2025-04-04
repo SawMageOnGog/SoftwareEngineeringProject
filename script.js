@@ -2,6 +2,29 @@ let entries = [];
 let totalCalories = 0;
 const dailyCalorieGoal = 2000;
 
+// Load saved data from localStorage when the page loads
+window.onload = function() {
+    loadData();
+};
+
+function loadData() {
+    // Retrieve data from localStorage
+    const savedEntries = localStorage.getItem('entries');
+    const savedTotalCalories = localStorage.getItem('totalCalories');
+
+    if (savedEntries) {
+        entries = JSON.parse(savedEntries);
+        totalCalories = parseInt(savedTotalCalories);
+    }
+
+    displayEntries();
+    updateTotalCalories();
+    updateCaloriesLeft();
+    updateFeedback();
+    suggestFoodGroup();
+    giveTimeBasedAdvice();
+}
+
 function addEntry() {
     const food = document.getElementById('food').value;
     const calories = document.getElementById('calories').value;
@@ -10,6 +33,10 @@ function addEntry() {
         const entry = { food, calories: parseInt(calories) };
         entries.push(entry);
         totalCalories += entry.calories;
+
+        // Save updated data to localStorage
+        saveData();
+
         displayEntries();
         updateTotalCalories();
         updateCaloriesLeft();
@@ -20,6 +47,12 @@ function addEntry() {
     } else {
         alert('Please enter both food and calories.');
     }
+}
+
+function saveData() {
+    // Save the current entries and total calories to localStorage
+    localStorage.setItem('entries', JSON.stringify(entries));
+    localStorage.setItem('totalCalories', totalCalories.toString());
 }
 
 function displayEntries() {
