@@ -10,7 +10,7 @@ h1 {
 }
 
 h2 {
-    text-align: center; /* Center the "Entries" heading */
+    text-align: center;
     color: #333;
 }
 
@@ -43,23 +43,25 @@ button:hover {
 ul#entries {
     list-style: none;
     padding: 0;
-    display: flex; /* Use flexbox to align items */
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Center items vertically */
-    margin: 0 auto; /* Optional: Ensures the list container itself is centered */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 580px;
 }
 
 ul#entries li {
-    display: block; /* Stack entries vertically */
+    display: block;
+    text-align: center;
     padding: 10px;
     margin: 5px;
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 16px;
-    width: auto; /* Ensures the width adjusts to the content */
-    max-width: 400px; /* Optional: Limit the width for longer items */
+    font-size: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 ul#entries li:hover {

@@ -120,8 +120,10 @@ function suggestFoodGroup() {
         suggestedFoodGroupElement.textContent = "Consider adding some proteins or healthy fats.";
     } else if (totalCalories < dailyCalorieGoal * 0.8) {
         suggestedFoodGroupElement.textContent = "Include some whole grains to balance your intake.";
-    } else {
+    } else if (totalCalories < dailyCalorieGoal * 0.9) {
         suggestedFoodGroupElement.textContent = "You can only eat a little more big back, you’re really close to your goal. Drink water and avoid excess sugars.";
+    } else {
+        suggestedFoodGroupElement.textContent = "";
     }
 }
 
@@ -150,10 +152,12 @@ function giveTimeBasedAdvice() {
     } else { // Evening and Late Night (6 PM - 6 AM)
         if (caloriesLeft > dailyCalorieGoal * 0.5) {
             timeBasedAdviceElement.textContent = "It’s evening! Make sure to eat a proper dinner.";
-        } else if (caloriesLeft > dailyCalorieGoal * 0.2) {
+        } else if (caloriesLeft > dailyCalorieGoal * 0.35) {
             timeBasedAdviceElement.textContent = "You’re doing great, but be mindful of your calories in the evening.";
-        } else {
+        } else if (caloriesLeft > dailyCalorieGoal * 0.2){
             timeBasedAdviceElement.textContent = "It’s getting late. Don't be a big back, slow down and make sure you don’t go over your goal.";
+        } else {
+            timeBasedAdviceElement.textContent = "You should stop eating, you might be a big back";
         }
     }
 }
