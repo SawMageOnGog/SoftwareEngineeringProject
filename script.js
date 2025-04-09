@@ -56,6 +56,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function initApp() {
+    const username = localStorage.getItem('username');
+    if (username) {
+        checkForNewDay(); // Check if it's a new day and reset if necessary
+        loadData();       // Load the user's data
+        updateClock();     // Initialize the clock
+        setInterval(updateClock, 1000);
+
+        document.getElementById('header').textContent = `Logged in as: ${username}`;
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+    }
+}
+
+function saveData() {
+    const username = localStorage.getItem('username');
+    if (!username) return;  // Ensure the user is logged in before saving data
+
+    // Save entries and total calories for the logged-in user
+    localStorage.setItem(`${username}-entries`, JSON.stringify(entries));
+    localStorage.setItem(`${username}-totalCalories`, totalCalories.toString());
+}
+
+function loadData() {
+    const username = localStorage.getItem('username');
+    if (!username) return;
+
+    // Load the entries and total calories for the logged-in user
+    const savedEntries = localStorage.getItem(`${username}-entries`);
+    const savedTotalCalories = localStorage.getItem(`${username}-totalCalories`);
+
+    if (savedEntries) {
+        entries = JSON.parse(savedEntries);
+        totalCalories = parseInt(savedTotalCalories);
+    }
+
+    // Display the loaded entries and update the totals
+    displayEntries();
+    updateTotalCalories();
+    updateCaloriesLeft();
+    updateFeedback();
+    suggestFoodGroup();
+    giveTimeBasedAdvice();
+}
+
 function authenticateUser(username, password) {
     const users = JSON.parse(localStorage.getItem('users')) || [];
 
@@ -96,43 +140,6 @@ function createNewUser(username, password) {
     modal.style.display = 'flex';  // Show login modal
 }
 
-function loadData() {
-    const username = localStorage.getItem('username');
-    if (!username) return;
-
-    // Retrieve data for the logged-in user from localStorage
-    const savedEntries = localStorage.getItem(`${username}-entries`);
-    const savedTotalCalories = localStorage.getItem(`${username}-totalCalories`);
-
-    if (savedEntries) {
-        entries = JSON.parse(savedEntries);
-        totalCalories = parseInt(savedTotalCalories);
-    }
-
-    displayEntries();
-    updateTotalCalories();
-    updateCaloriesLeft();
-    updateFeedback();
-    suggestFoodGroup();
-    giveTimeBasedAdvice();
-}
-
-function saveData() {
-    const username = localStorage.getItem('username');
-    if (!username) return;
-
-    // Save the current entries and total calories to localStorage using the username as the key
-    localStorage.setItem(`${username}-entries`, JSON.stringify(entries));
-    localStorage.setItem(`${username}-totalCalories`, totalCalories.toString());
-}
-
-function initApp() {
-    checkForNewDay();
-    loadData();
-    updateClock();
-    setInterval(updateClock, 1000);
-};
-
 function checkForNewDay() {
     const lastResetDate = localStorage.getItem('lastResetDate');
     const currentDate = new Date().toISOString().split('T')[0];
@@ -150,37 +157,21 @@ function resetTracker() {
     updateTotals();
 }
 
-function loadData() {
-    const savedEntries = localStorage.getItem('entries');
-    const savedTotalCalories = localStorage.getItem('totalCalories');
-
-    if (savedEntries) {
-        entries = JSON.parse(savedEntries);
-        totalCalories = parseInt(savedTotalCalories) || 0;
-    }
-
-    displayEntries();
-    updateTotals();
-}
-
-function saveData() {
-    localStorage.setItem('entries', JSON.stringify(entries));
-    localStorage.setItem('totalCalories', totalCalories.toString());
-}
-
 function addEntry() {
     const foodInput = document.getElementById('food');
     const caloriesInput = document.getElementById('calories');
+    const foodTypeSelect = document.getElementById('food-type');  // Get the selected food type
     const entriesList = document.getElementById('entries');
 
     const food = foodInput.value.trim();
     const calories = parseInt(caloriesInput.value.trim());
+    const foodType = foodTypeSelect.value;  // Get the selected food type
 
     if (!food || isNaN(calories)) return;
 
-    const entry = { food, calories, timestamp: Date.now() };
+    const entry = { food, calories, foodType, timestamp: Date.now() };  // Include foodType in entry
     const entryItem = document.createElement('li');
-    entryItem.textContent = `${food}: ${calories} calories`;
+    entryItem.textContent = `${food}: ${calories} calories (${foodType})`;  // Display food type in entry
 
     // Create Remove button
     const removeBtn = document.createElement('button');
@@ -197,11 +188,13 @@ function addEntry() {
     entryItem.appendChild(removeBtn);
     entriesList.appendChild(entryItem);
 
-    saveEntry(entry);
-    updateTotals();
-    saveData();  // Save the updated data for the current user
+    entries.push(entry);  // Add entry to the list
+    totalCalories += calories;  // Update total calories
 
-    foodInput.value = '';
+    saveData();  // Immediately save the data after adding a new entry
+    updateTotals();  // Update the totals on screen
+
+    foodInput.value = '';  // Clear input fields
     caloriesInput.value = '';
 }
 
@@ -211,7 +204,8 @@ function displayEntries() {
 
     entries.forEach(entry => {
         const li = document.createElement('li');
-        li.textContent = `${entry.food}: ${entry.calories} calories`;
+        li.textContent = `${entry.food}: ${entry.calories} calories (${entry.foodType})`;
+        li.setAttribute('data-food-type', entry.foodType);
 
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Remove';

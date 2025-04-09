@@ -164,3 +164,57 @@ p {
     padding: 0.5rem;
     width: 80%;
 }
+
+/* Style for different food types */
+li[data-food-type="Fruits"] {
+    background-color: #ffeb3b;  /* Yellow for fruits */
+}
+
+li[data-food-type="Vegetables"] {
+    background-color: #81c784;  /* Green for vegetables */
+}
+
+li[data-food-type="Protein"] {
+    background-color: #ff7043;  /* Orange for protein */
+}
+
+li[data-food-type="Grains"] {
+    background-color: #8d6e63;  /* Brown for grains */
+}
+
+li[data-food-type="Dairy"] {
+    background-color: #90caf9;  /* Blue for dairy */
+}
+
+li[data-food-type="Sweets"] {
+    background-color: #f48fb1;  /* Pink for sweets */
+}
+
+#header {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#username-display {
+    margin-right: 10px; /* Space between the username and logout button */
+    font-size: 16px;
+}
+
+#logoutBtn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #d35400;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#logoutBtn:hover {
+    background-color: #e67e22;
+}

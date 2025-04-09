@@ -8,9 +8,21 @@
 </head>
 <body>
     <h1>Stop Eating Big Back</h1>
+    <div id="header"></div>
+        <span id="username-display"></span>
+    </div>
     <div id="input-section">
         <input type="text" id="food" placeholder="Food Item">
         <input type="number" id="calories" placeholder="Calories">
+        <!-- Dropdown for Food Type -->
+        <select id="food-type">
+            <option value="Fruits">Fruits</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Protein">Protein</option>
+            <option value="Grains">Grains</option>
+            <option value="Dairy">Dairy</option>
+            <option value="Sweets">Sweets</option>
+        </select>
         <button onclick="addEntry()">Add Entry</button>
     </div>
     <h2>Food You've Eaten Today</h2>
