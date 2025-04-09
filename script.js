@@ -2,7 +2,131 @@ let entries = [];
 let totalCalories = 0;
 const dailyCalorieGoal = 2000;
 
-window.onload = function () {
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('loginModal');
+    const createUserModal = document.getElementById('createUserModal');
+    const loginBtn = document.getElementById('loginBtn');
+    const createAccountBtn = document.getElementById('createAccountBtn');
+    const backToLoginBtn = document.getElementById('backToLoginBtn');
+    const createUserBtn = document.getElementById('createUserBtn');
+
+    // Check if the user is already logged in
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+        modal.style.display = 'none';
+        initApp(); // Initialize app if logged in
+    } else {
+        modal.style.display = 'flex'; // Show login modal
+    }
+
+    // Show the create new user modal when "Create New Account" is clicked
+    createAccountBtn.addEventListener('click', () => {
+        modal.style.display = 'none';  // Hide login modal
+        createUserModal.style.display = 'flex';  // Show create user modal
+    });
+
+    // Show the login modal when "Back to Login" is clicked
+    backToLoginBtn.addEventListener('click', () => {
+        createUserModal.style.display = 'none';  // Hide create user modal
+        modal.style.display = 'flex';  // Show login modal
+    });
+
+    // Handle login
+    loginBtn.addEventListener('click', () => {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        if (username && password) {
+            authenticateUser(username, password);
+        } else {
+            alert('Please enter both username and password.');
+        }
+    });
+
+    // Handle creating a new user
+    createUserBtn.addEventListener('click', () => {
+        const newUsername = document.getElementById('newUsername').value.trim();
+        const newPassword = document.getElementById('newPassword').value.trim();
+
+        if (newUsername && newPassword) {
+            createNewUser(newUsername, newPassword);
+        } else {
+            alert('Please enter a username and password.');
+        }
+    });
+});
+
+function authenticateUser(username, password) {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    // Find the user in the stored users
+    const user = users.find(user => user.username === username && user.password === password);
+
+    if (user) {
+        // If the user is found and the password matches, set the logged-in user
+        localStorage.setItem('username', username); // Store the username in localStorage
+
+        // Hide the login modal and show the app content
+        document.getElementById('loginModal').style.display = 'none'; // Hide the login modal
+        initApp();  // Initialize your app (could be your calorie tracker logic)
+        
+        // Load the user-specific data
+        loadData();  // This ensures the correct data is loaded for the logged-in user
+
+    } else {
+        alert('Invalid username or password. Please try again.');
+    }
+}
+
+function createNewUser(username, password) {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    
+    // Check if the user already exists
+    if (users.some(user => user.username === username)) {
+        alert('Username already exists!');
+        return;
+    }
+
+    // Create the new user and add to the list
+    users.push({ username, password });
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert('User created successfully! Please log in.');
+    createUserModal.style.display = 'none'; // Close create user modal
+    modal.style.display = 'flex';  // Show login modal
+}
+
+function loadData() {
+    const username = localStorage.getItem('username');
+    if (!username) return;
+
+    // Retrieve data for the logged-in user from localStorage
+    const savedEntries = localStorage.getItem(`${username}-entries`);
+    const savedTotalCalories = localStorage.getItem(`${username}-totalCalories`);
+
+    if (savedEntries) {
+        entries = JSON.parse(savedEntries);
+        totalCalories = parseInt(savedTotalCalories);
+    }
+
+    displayEntries();
+    updateTotalCalories();
+    updateCaloriesLeft();
+    updateFeedback();
+    suggestFoodGroup();
+    giveTimeBasedAdvice();
+}
+
+function saveData() {
+    const username = localStorage.getItem('username');
+    if (!username) return;
+
+    // Save the current entries and total calories to localStorage using the username as the key
+    localStorage.setItem(`${username}-entries`, JSON.stringify(entries));
+    localStorage.setItem(`${username}-totalCalories`, totalCalories.toString());
+}
+
+function initApp() {
     checkForNewDay();
     loadData();
     updateClock();
@@ -45,18 +169,40 @@ function saveData() {
 }
 
 function addEntry() {
-    const food = document.getElementById('food').value.trim();
-    const calories = parseInt(document.getElementById('calories').value.trim());
+    const foodInput = document.getElementById('food');
+    const caloriesInput = document.getElementById('calories');
+    const entriesList = document.getElementById('entries');
+
+    const food = foodInput.value.trim();
+    const calories = parseInt(caloriesInput.value.trim());
 
     if (!food || isNaN(calories)) return;
 
     const entry = { food, calories, timestamp: Date.now() };
-    entries.push(entry);
-    totalCalories += calories;
-    saveData();
-    displayEntries();
+    const entryItem = document.createElement('li');
+    entryItem.textContent = `${food}: ${calories} calories`;
+
+    // Create Remove button
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.classList.add('remove-btn');
+    removeBtn.onclick = function () {
+        if (confirm('Are you sure?')) {
+            entriesList.removeChild(entryItem);
+            removeEntryFromStorage(entry.timestamp);
+            updateTotals();
+        }
+    };
+
+    entryItem.appendChild(removeBtn);
+    entriesList.appendChild(entryItem);
+
+    saveEntry(entry);
     updateTotals();
-    clearInputs();
+    saveData();  // Save the updated data for the current user
+
+    foodInput.value = '';
+    caloriesInput.value = '';
 }
 
 function displayEntries() {
@@ -175,4 +321,20 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTotals();
         }
     });
+});
+
+document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    localStorage.removeItem('username');
+    location.reload();  // Force logout and reload
+});
+
+document.getElementById('createUserBtn').addEventListener('click', () => {
+    const newUsername = document.getElementById('newUsername').value.trim();
+    const newPassword = document.getElementById('newPassword').value.trim();
+
+    if (newUsername && newPassword) {
+        createNewUser(newUsername, newPassword);
+    } else {
+        alert('Please enter a username and password.');
+    }
 });

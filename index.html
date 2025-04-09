@@ -38,6 +38,30 @@
         <button id="reset-btn">Reset Tracker</button>
     </div>
 
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Enter your username">
+            <input type="password" id="password" placeholder="Enter your password">
+            <button id="loginBtn">Login</button>
+            <button id="createAccountBtn">Create New Account</button>
+        </div>
+    </div>
+
+    <!-- Create New User Modal (Hidden by default) -->
+    <div id="createUserModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Create New User</h2>
+            <input type="text" id="newUsername" placeholder="Enter new username">
+            <input type="password" id="newPassword" placeholder="Enter password">
+            <button id="createUserBtn">Create User</button>
+            <button id="backToLoginBtn">Back to Login</button>
+        </div>
+    </div>
+    
+    <button id="logoutBtn">Logout</button>
+
     <script src="script.js"></script>
 </body>
 </html>
