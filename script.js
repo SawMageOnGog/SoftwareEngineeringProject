@@ -50,27 +50,45 @@ function loadData() {
 }
 
 function addEntry() {
-    const food = document.getElementById('food').value;
-    const calories = document.getElementById('calories').value;
+    const foodInput = document.getElementById('food');
+    const caloriesInput = document.getElementById('calories');
+    const entriesList = document.getElementById('entries');
 
-    if (food && calories) {
-        const entry = { food, calories: parseInt(calories) };
-        entries.push(entry);
-        totalCalories += entry.calories;
+    const food = foodInput.value.trim();
+    const calories = parseInt(caloriesInput.value.trim());
 
-        // Save updated data to localStorage
-        saveData();
+    if (!food || isNaN(calories)) return;
 
-        displayEntries();
-        updateTotalCalories();
-        updateCaloriesLeft();
-        updateFeedback();
-        suggestFoodGroup();
-        giveTimeBasedAdvice();
-        clearInputs();
-    } else {
-        alert('Please enter both food and calories.');
-    }
+    const entry = { food, calories, timestamp: Date.now() };
+    const entryItem = document.createElement('li');
+    entryItem.textContent = `${food}: ${calories} calories`;
+
+    // Create Remove button
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.classList.add('remove-btn');
+    removeBtn.onclick = function () {
+        if (confirm('Are you sure?')) {
+            entriesList.removeChild(entryItem);
+            removeEntryFromStorage(entry.timestamp);
+            updateTotals();
+        }
+    };
+
+    entryItem.appendChild(removeBtn);
+    entriesList.appendChild(entryItem);
+
+    saveEntry(entry);
+    updateTotals();
+
+    foodInput.value = '';
+    caloriesInput.value = '';
+}
+
+function removeEntryFromStorage(timestamp) {
+    const entries = JSON.parse(localStorage.getItem('calorieEntries') || '[]');
+    const updated = entries.filter(e => e.timestamp !== timestamp);
+    localStorage.setItem('calorieEntries', JSON.stringify(updated));
 }
 
 function saveData() {
