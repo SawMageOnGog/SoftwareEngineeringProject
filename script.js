@@ -2,99 +2,61 @@ let entries = [];
 let totalCalories = 0;
 const dailyCalorieGoal = 2000;
 
-// Load saved data from localStorage when the page loads
-window.onload = function() {
-    checkForNewDay();  // Check if it's a new day and reset if necessary
+window.onload = function () {
+    checkForNewDay();
     loadData();
-    updateClock();  // Update the clock immediately on page load
-    setInterval(updateClock, 1000);  // Update the clock every second
+    updateClock();
+    setInterval(updateClock, 1000);
 };
 
 function checkForNewDay() {
     const lastResetDate = localStorage.getItem('lastResetDate');
-    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-
+    const currentDate = new Date().toISOString().split('T')[0];
     if (lastResetDate !== currentDate) {
-        // It's a new day, so reset the tracker
-        localStorage.setItem('lastResetDate', currentDate);  // Update the last reset date
-        resetTracker();  // Reset entries and total calories
+        localStorage.setItem('lastResetDate', currentDate);
+        resetTracker();
     }
 }
 
 function resetTracker() {
-    // Clear entries and total calories
     entries = [];
     totalCalories = 0;
-
-    // Save empty state to localStorage
-    localStorage.setItem('entries', JSON.stringify(entries));
-    localStorage.setItem('totalCalories', totalCalories.toString());
+    saveData();
+    displayEntries();
+    updateTotals();
 }
 
 function loadData() {
-    // Retrieve data from localStorage
     const savedEntries = localStorage.getItem('entries');
     const savedTotalCalories = localStorage.getItem('totalCalories');
 
     if (savedEntries) {
         entries = JSON.parse(savedEntries);
-        totalCalories = parseInt(savedTotalCalories);
+        totalCalories = parseInt(savedTotalCalories) || 0;
     }
 
     displayEntries();
-    updateTotalCalories();
-    updateCaloriesLeft();
-    updateFeedback();
-    suggestFoodGroup();
-    giveTimeBasedAdvice();
+    updateTotals();
+}
+
+function saveData() {
+    localStorage.setItem('entries', JSON.stringify(entries));
+    localStorage.setItem('totalCalories', totalCalories.toString());
 }
 
 function addEntry() {
-    const foodInput = document.getElementById('food');
-    const caloriesInput = document.getElementById('calories');
-    const entriesList = document.getElementById('entries');
-
-    const food = foodInput.value.trim();
-    const calories = parseInt(caloriesInput.value.trim());
+    const food = document.getElementById('food').value.trim();
+    const calories = parseInt(document.getElementById('calories').value.trim());
 
     if (!food || isNaN(calories)) return;
 
     const entry = { food, calories, timestamp: Date.now() };
-    const entryItem = document.createElement('li');
-    entryItem.textContent = `${food}: ${calories} calories`;
-
-    // Create Remove button
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'Remove';
-    removeBtn.classList.add('remove-btn');
-    removeBtn.onclick = function () {
-        if (confirm('Are you sure?')) {
-            entriesList.removeChild(entryItem);
-            removeEntryFromStorage(entry.timestamp);
-            updateTotals();
-        }
-    };
-
-    entryItem.appendChild(removeBtn);
-    entriesList.appendChild(entryItem);
-
-    saveEntry(entry);
+    entries.push(entry);
+    totalCalories += calories;
+    saveData();
+    displayEntries();
     updateTotals();
-
-    foodInput.value = '';
-    caloriesInput.value = '';
-}
-
-function removeEntryFromStorage(timestamp) {
-    const entries = JSON.parse(localStorage.getItem('calorieEntries') || '[]');
-    const updated = entries.filter(e => e.timestamp !== timestamp);
-    localStorage.setItem('calorieEntries', JSON.stringify(updated));
-}
-
-function saveData() {
-    // Save the current entries and total calories to localStorage
-    localStorage.setItem('entries', JSON.stringify(entries));
-    localStorage.setItem('totalCalories', totalCalories.toString());
+    clearInputs();
 }
 
 function displayEntries() {
@@ -104,8 +66,31 @@ function displayEntries() {
     entries.forEach(entry => {
         const li = document.createElement('li');
         li.textContent = `${entry.food}: ${entry.calories} calories`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'Remove';
+        removeBtn.classList.add('remove-btn');
+        removeBtn.onclick = () => {
+            if (confirm('Are you sure?')) {
+                entries = entries.filter(e => e.timestamp !== entry.timestamp);
+                totalCalories -= entry.calories;
+                saveData();
+                displayEntries();
+                updateTotals();
+            }
+        };
+
+        li.appendChild(removeBtn);
         entriesList.appendChild(li);
     });
+}
+
+function updateTotals() {
+    updateTotalCalories();
+    updateCaloriesLeft();
+    updateFeedback();
+    suggestFoodGroup();
+    giveTimeBasedAdvice();
 }
 
 function updateTotalCalories() {
@@ -113,90 +98,81 @@ function updateTotalCalories() {
 }
 
 function updateCaloriesLeft() {
-    const caloriesLeft = dailyCalorieGoal - totalCalories;
-    document.getElementById('caloriesLeft').textContent = caloriesLeft >= 0 ? caloriesLeft : 0;
+    const left = dailyCalorieGoal - totalCalories;
+    document.getElementById('caloriesLeft').textContent = left >= 0 ? left : 0;
 }
 
 function updateFeedback() {
-    const feedbackElement = document.getElementById('feedback');
+    const feedback = document.getElementById('feedback');
     if (totalCalories >= dailyCalorieGoal) {
-        feedbackElement.textContent = "STOP EATING BIG BACK! You’ve reached your calorie goal and you shouldn't eat anymore today! Great job!";
+        feedback.textContent = "STOP EATING BIG BACK! You’ve reached your calorie goal!";
     } else if (totalCalories > dailyCalorieGoal * 0.8) {
-        feedbackElement.textContent = "You’re almost there! Keep going!";
+        feedback.textContent = "You’re almost there! Keep going!";
     } else if (totalCalories > dailyCalorieGoal * 0.5) {
-        feedbackElement.textContent = "You’ve had a decent amount, pace yourself.";
+        feedback.textContent = "You’ve had a decent amount, pace yourself.";
     } else {
-        feedbackElement.textContent = "Keep it up, you're doing great!";
+        feedback.textContent = "Keep it up, you're doing great!";
     }
 }
 
 function suggestFoodGroup() {
-    const suggestedFoodGroupElement = document.getElementById('suggestedFoodGroup');
+    const suggestion = document.getElementById('suggestedFoodGroup');
     if (totalCalories < dailyCalorieGoal * 0.3) {
-        suggestedFoodGroupElement.textContent = "Try adding more fruits and vegetables.";
+        suggestion.textContent = "Try adding more fruits and vegetables.";
     } else if (totalCalories < dailyCalorieGoal * 0.6) {
-        suggestedFoodGroupElement.textContent = "Consider adding some proteins or healthy fats.";
+        suggestion.textContent = "Consider proteins or healthy fats.";
     } else if (totalCalories < dailyCalorieGoal * 0.8) {
-        suggestedFoodGroupElement.textContent = "Include some whole grains to balance your intake.";
+        suggestion.textContent = "Include some whole grains.";
     } else if (totalCalories < dailyCalorieGoal * 0.9) {
-        suggestedFoodGroupElement.textContent = "You can only eat a little more big back, you’re really close to your goal. Drink water and avoid excess sugars.";
+        suggestion.textContent = "You're close to your goal. Drink water and avoid excess sugars.";
     } else {
-        suggestedFoodGroupElement.textContent = "";
+        suggestion.textContent = "";
     }
 }
 
 function giveTimeBasedAdvice() {
-    const timeBasedAdviceElement = document.getElementById('timeBasedAdvice');
-    const caloriesLeft = dailyCalorieGoal - totalCalories;
-    const currentTime = new Date().getHours();
+    const advice = document.getElementById('timeBasedAdvice');
+    const currentHour = new Date().getHours();
+    const left = dailyCalorieGoal - totalCalories;
 
-    // Time of Day-Based Feedback
-    if (currentTime >= 6 && currentTime < 12) { // Morning (6 AM - 12 PM)
-        if (caloriesLeft > dailyCalorieGoal * 0.8) {
-            timeBasedAdviceElement.textContent = "Good morning! You’ve got plenty of time and calories left. Keep a steady pace.";
-        } else if (caloriesLeft > dailyCalorieGoal * 0.5) {
-            timeBasedAdviceElement.textContent = "It’s early! You can afford to eat more, but don't overdo it.";
-        } else {
-            timeBasedAdviceElement.textContent = "Stop eating big back! You’ve eaten a LOT today. Pace yourself!";
-        }
-    } else if (currentTime >= 12 && currentTime < 18) { // Afternoon (12 PM - 6 PM)
-        if (caloriesLeft > dailyCalorieGoal * 0.5) {
-            timeBasedAdviceElement.textContent = "Good afternoon! You’re on track, but don’t be a big back, slow down a little bit.";
-        } else if (caloriesLeft > dailyCalorieGoal * 0.2) {
-            timeBasedAdviceElement.textContent = "You’re doing well! Make sure to balance your meals for the rest of the day.";
-        } else {
-            timeBasedAdviceElement.textContent = "Stop eating big back! You’re getting close to your goal. You might finish up with a snack";
-        }
-    } else { // Evening and Late Night (6 PM - 6 AM)
-        if (caloriesLeft > dailyCalorieGoal * 0.5) {
-            timeBasedAdviceElement.textContent = "It’s evening! Make sure to eat a proper dinner.";
-        } else if (caloriesLeft > dailyCalorieGoal * 0.35) {
-            timeBasedAdviceElement.textContent = "You’re doing great, but be mindful of your calories in the evening.";
-        } else if (caloriesLeft > dailyCalorieGoal * 0.2){
-            timeBasedAdviceElement.textContent = "It’s getting late. Don't be a big back, slow down and make sure you don’t go over your goal.";
-        } else {
-            timeBasedAdviceElement.textContent = "You should stop eating, you might be a big back";
-        }
+    if (currentHour < 12) {
+        advice.textContent = left > 1600 ? "Good morning! You've got plenty of time and calories left." :
+                             left > 1000 ? "It’s early! You can eat more, but pace yourself." :
+                             "Whoa! It’s morning and you’ve eaten a lot. Slow down.";
+    } else if (currentHour < 18) {
+        advice.textContent = left > 1000 ? "You’re on track, just don’t overeat at lunch." :
+                             left > 500 ? "You’re doing well! Balance your meals for the rest of the day." :
+                             "Almost there! Light dinner might be enough.";
+    } else {
+        advice.textContent = left > 800 ? "Dinner time! Make sure you eat something." :
+                             left > 300 ? "Getting late. Maybe a snack, but nothing big." :
+                             "It’s late and you’ve had plenty. Stop eating, big back.";
     }
 }
 
 function updateClock() {
-    // Update the current time
     const now = new Date();
-    const currentTime = now.toLocaleTimeString();
-    document.getElementById('time').textContent = currentTime;
+    document.getElementById('time').textContent = now.toLocaleTimeString();
 
-    // Calculate time left until midnight
     const midnight = new Date();
-    midnight.setHours(24, 0, 0, 0);  // Set the time to midnight of the current day
-    const timeLeft = midnight - now;  // Time left in milliseconds
-    const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));  // Convert milliseconds to hours
-    const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));  // Convert remaining milliseconds to minutes
-
-    document.getElementById('timeRemaining').textContent = `${hoursLeft} hours and ${minutesLeft} minutes`;
+    midnight.setHours(24, 0, 0, 0);
+    const msLeft = midnight - now;
+    const hrs = Math.floor(msLeft / 3600000);
+    const mins = Math.floor((msLeft % 3600000) / 60000);
+    document.getElementById('timeRemaining').textContent = `${hrs} hours and ${mins} minutes`;
 }
 
 function clearInputs() {
     document.getElementById('food').value = '';
     document.getElementById('calories').value = '';
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('reset-btn')?.addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset everything? This cannot be undone.')) {
+            resetTracker();
+            displayEntries();
+            updateTotals();
+        }
+    });
+});
