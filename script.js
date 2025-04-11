@@ -96,7 +96,6 @@ function loadData() {
     updateTotalCalories();
     updateCaloriesLeft();
     updateFeedback();
-    suggestFoodGroup();
     giveTimeBasedAdvice();
 }
 
@@ -229,7 +228,6 @@ function updateTotals() {
     updateTotalCalories();
     updateCaloriesLeft();
     updateFeedback();
-    suggestFoodGroup();
     giveTimeBasedAdvice();
 }
 
@@ -255,39 +253,59 @@ function updateFeedback() {
     }
 }
 
-function suggestFoodGroup() {
-    const suggestion = document.getElementById('suggestedFoodGroup');
-    if (totalCalories < dailyCalorieGoal * 0.3) {
-        suggestion.textContent = "Try adding more fruits and vegetables.";
-    } else if (totalCalories < dailyCalorieGoal * 0.6) {
-        suggestion.textContent = "Consider proteins or healthy fats.";
-    } else if (totalCalories < dailyCalorieGoal * 0.8) {
-        suggestion.textContent = "Include some whole grains.";
-    } else if (totalCalories < dailyCalorieGoal * 0.9) {
-        suggestion.textContent = "You're close to your goal. Drink water and avoid excess sugars.";
-    } else {
-        suggestion.textContent = "";
-    }
-}
-
 function giveTimeBasedAdvice() {
     const advice = document.getElementById('timeBasedAdvice');
     const currentHour = new Date().getHours();
     const left = dailyCalorieGoal - totalCalories;
 
-    if (currentHour < 12) {
-        advice.textContent = left > 1600 ? "Good morning! You've got plenty of time and calories left." :
-                             left > 1000 ? "It’s early! You can eat more, but pace yourself." :
-                             "Whoa! It’s morning and you’ve eaten a lot. Slow down.";
-    } else if (currentHour < 18) {
-        advice.textContent = left > 1000 ? "You’re on track, just don’t overeat at lunch." :
-                             left > 500 ? "You’re doing well! Balance your meals for the rest of the day." :
-                             "Almost there! Light dinner might be enough.";
-    } else {
-        advice.textContent = left > 800 ? "Dinner time! Make sure you eat something." :
-                             left > 300 ? "Getting late. Maybe a snack, but nothing big." :
-                             "It’s late and you’ve had plenty. Stop eating, big back.";
+    // Count food types
+    const typeCount = {
+        fruits: 0,
+        vegetables: 0,
+        protein: 0,
+        grains: 0,
+        dairy: 0,
+        sweets: 0
+    };
+
+    entries.forEach(entry => {
+        const type = entry.foodType?.toLowerCase();
+        if (typeCount.hasOwnProperty(type)) {
+            typeCount[type]++;
+        }
+    });
+
+    let typeAdvice = '';
+    if (typeCount.sweets > 3) {
+        typeAdvice += "You've had quite a few sweets. Ease up a bit. ";
     }
+    if (typeCount.fruit + typeCount.vegetable < 3) {
+        typeAdvice += "Consider eating more fruits and vegetables. ";
+    }
+    if (typeCount.protein < 2) {
+        typeAdvice += "You could use more protein today. ";
+    }
+    if (typeCount.grain < 2) {
+        typeAdvice += "Don’t forget your whole grains. ";
+    }
+
+    // Time-based base message
+    let timeAdvice = '';
+    if (currentHour < 12) {
+        timeAdvice = left > 1600 ? "Good morning! Plenty of room to plan healthy meals." :
+                     left > 1000 ? "It’s early — pace yourself." :
+                     "Whoa! Heavy start — go lighter the rest of the day.";
+    } else if (currentHour < 18) {
+        timeAdvice = left > 1000 ? "You’re on track — don’t forget balance." :
+                     left > 500 ? "Nice progress. Balance your next meals." :
+                     "Almost there! Consider a light dinner.";
+    } else {
+        timeAdvice = left > 800 ? "Dinner time — choose something nutritious." :
+                     left > 300 ? "Getting late — a light snack might do." :
+                     "It’s late and you’ve eaten plenty. Wrap it up!";
+    }
+
+    advice.textContent = `${timeAdvice} ${typeAdvice}`.trim();
 }
 
 function updateClock() {
