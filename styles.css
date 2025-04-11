@@ -213,7 +213,7 @@ li[data-food-type="Sweets"] {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    position: absolute;
+    position: fixed;
     top: 15px;
     right: 20px;
 }

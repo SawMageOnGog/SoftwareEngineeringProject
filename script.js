@@ -242,23 +242,41 @@ function updateCaloriesLeft() {
 
 function updateFeedback() {
     const feedback = document.getElementById('feedback');
+    const caloriesLeft = dailyCalorieGoal - totalCalories;
+
+    // Incremental feedback based on total calories consumed
     if (totalCalories >= dailyCalorieGoal) {
         feedback.textContent = "STOP EATING BIG BACK! You’ve reached your calorie goal!";
-    } else if (totalCalories > dailyCalorieGoal * 0.8) {
-        feedback.textContent = "You’re almost there! Keep going!";
-    } else if (totalCalories > dailyCalorieGoal * 0.5) {
-        feedback.textContent = "You’ve had a decent amount, pace yourself.";
-    } else {
-        feedback.textContent = "Keep it up, you're doing great!";
+    } 
+    else if (totalCalories >= dailyCalorieGoal * 0.9) {
+        feedback.textContent = "You're almost there! Great job staying focused. Just a little bit more!";
+    } 
+    else if (totalCalories > dailyCalorieGoal * 0.8) {
+        feedback.textContent = "You're making excellent progress! You’ve reached 80% of your goal — pace yourself!";
     }
+    else if (totalCalories > dailyCalorieGoal * 0.6) {
+        feedback.textContent = "You’ve had a decent amount today! Keep going, but remember to balance your meals!";
+    }
+    else if (totalCalories > dailyCalorieGoal * 0.4) {
+        feedback.textContent = "You're doing well! You've got a solid start. Try to stay mindful of portion sizes.";
+    }
+    else if (totalCalories > dailyCalorieGoal * 0.2) {
+        feedback.textContent = "Nice start! You’ve had a good portion of your daily calories. Keep going strong!";
+    }
+    else {
+        feedback.textContent = "Keep it up, you're doing great! You've just started your day — keep it balanced!";
+    }
+
+    // Update both time-based and food group-based advice
+    giveTimeBasedAdvice();
 }
 
 function giveTimeBasedAdvice() {
     const advice = document.getElementById('timeBasedAdvice');
     const currentHour = new Date().getHours();
-    const left = dailyCalorieGoal - totalCalories;
+    const caloriesLeft = dailyCalorieGoal - totalCalories;
 
-    // Count food types
+    // Count food types consumed
     const typeCount = {
         fruits: 0,
         vegetables: 0,
@@ -275,38 +293,47 @@ function giveTimeBasedAdvice() {
         }
     });
 
-    let typeAdvice = '';
+    // Food-related advice
+    let foodAdvice = '';
     if (typeCount.sweets > 3) {
-        typeAdvice += "You've had quite a few sweets. Ease up a bit. ";
+        foodAdvice += "You've had quite a few sweets. Ease up a bit. ";
     }
-    if (typeCount.fruit + typeCount.vegetable < 3) {
-        typeAdvice += "Consider eating more fruits and vegetables. ";
+    if (typeCount.fruits + typeCount.vegetables < 3) {
+        foodAdvice += "Consider eating more fruits and vegetables. ";
     }
     if (typeCount.protein < 2) {
-        typeAdvice += "You could use more protein today. ";
+        foodAdvice += "You could use more protein today. ";
     }
-    if (typeCount.grain < 2) {
-        typeAdvice += "Don’t forget your whole grains. ";
+    if (typeCount.grains < 2) {
+        foodAdvice += "Don’t forget your whole grains. ";
     }
 
-    // Time-based base message
+    // Time-based advice
     let timeAdvice = '';
     if (currentHour < 12) {
-        timeAdvice = left > 1600 ? "Good morning! Plenty of room to plan healthy meals." :
-                     left > 1000 ? "It’s early — pace yourself." :
-                     "Whoa! Heavy start — go lighter the rest of the day.";
+        timeAdvice = caloriesLeft > 1600 ? 
+            "Good morning! Plenty of room to plan healthy meals." :
+            caloriesLeft > 1000 ? 
+            "It’s early — pace yourself." :
+            "Whoa! Heavy start — go lighter the rest of the day.";
     } else if (currentHour < 18) {
-        timeAdvice = left > 1000 ? "You’re on track — don’t forget balance." :
-                     left > 500 ? "Nice progress. Balance your next meals." :
-                     "Almost there! Consider a light dinner.";
+        timeAdvice = caloriesLeft > 1000 ? 
+            "You’re on track — don’t forget balance." :
+            caloriesLeft > 500 ? 
+            "Nice progress. Balance your next meals." :
+            "Almost there! Consider a light dinner.";
     } else {
-        timeAdvice = left > 800 ? "Dinner time — choose something nutritious." :
-                     left > 300 ? "Getting late — a light snack might do." :
-                     "It’s late and you’ve eaten plenty. Wrap it up!";
+        timeAdvice = caloriesLeft > 800 ? 
+            "Dinner time — choose something nutritious." :
+            caloriesLeft > 300 ? 
+            "Getting late — a light snack might do." :
+            "It’s late and you’ve eaten plenty. Wrap it up!";
     }
 
-    advice.textContent = `${timeAdvice} ${typeAdvice}`.trim();
+    // Combine both time-based and food-related advice
+    advice.textContent = `${timeAdvice} ${foodAdvice}`.trim();
 }
+
 
 function updateClock() {
     const now = new Date();
