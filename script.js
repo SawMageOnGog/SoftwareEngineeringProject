@@ -403,3 +403,14 @@ document.getElementById('createUserBtn').addEventListener('click', () => {
         alert('Please enter a username and password.');
     }
 });
+
+document.getElementById('darkModeToggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+});
+
+// Load dark mode from localStorage
+if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+}
