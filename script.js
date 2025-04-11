@@ -286,6 +286,31 @@ function giveTimeBasedAdvice() {
         sweets: 0
     };
 
+    const estimatedCaloriesByGroup = {
+        fruits: 0,
+        vegetables: 0,
+        protein: 0,
+        grains: 0,
+        dairy: 0,
+        sweets: 0
+    };
+    
+    entries.forEach(entry => {
+        const type = entry.foodType?.toLowerCase();
+        if (estimatedCaloriesByGroup.hasOwnProperty(type)) {
+            estimatedCaloriesByGroup[type] += entry.calories || estimatedCaloriesByType[type];
+        }
+    });
+
+    const groupTargets = {
+        fruits: 200,
+        vegetables: 250,
+        protein: 400,
+        grains: 500,
+        dairy: 300,
+        sweets: 100
+    };    
+
     entries.forEach(entry => {
         const type = entry.foodType?.toLowerCase();
         if (typeCount.hasOwnProperty(type)) {
@@ -293,45 +318,46 @@ function giveTimeBasedAdvice() {
         }
     });
 
-    // Food-related advice
-    let foodAdvice = '';
-    if (typeCount.sweets > 3) {
-        foodAdvice += "You've had quite a few sweets. Ease up a bit. ";
-    }
-    if (typeCount.fruits + typeCount.vegetables < 3) {
-        foodAdvice += "Consider eating more fruits and vegetables. ";
-    }
-    if (typeCount.protein < 2) {
-        foodAdvice += "You could use more protein today. ";
-    }
-    if (typeCount.grains < 2) {
-        foodAdvice += "Don’t forget your whole grains. ";
-    }
-
     // Time-based advice
     let timeAdvice = '';
     if (currentHour < 12) {
         timeAdvice = caloriesLeft > 1600 ? 
-            "Good morning! Plenty of room to plan healthy meals." :
+            "Good morning! Plenty of room to plan healthy meals.\n" :
             caloriesLeft > 1000 ? 
-            "It’s early — pace yourself." :
-            "Whoa! Heavy start — go lighter the rest of the day.";
+            "It’s early — pace yourself. \n" :
+            "Whoa! Heavy start — go lighter the rest of the day.\n";
     } else if (currentHour < 18) {
         timeAdvice = caloriesLeft > 1000 ? 
-            "You’re on track — don’t forget balance." :
+            "You’re on track — don’t forget balance.\n" :
             caloriesLeft > 500 ? 
-            "Nice progress. Balance your next meals." :
-            "Almost there! Consider a light dinner.";
+            "Nice progress. Balance your next meals.\n" :
+            "Almost there! Consider a light dinner.\n";
     } else {
         timeAdvice = caloriesLeft > 800 ? 
-            "Dinner time — choose something nutritious." :
+            "Dinner time — choose something nutritious.\n" :
             caloriesLeft > 300 ? 
-            "Getting late — a light snack might do." :
-            "It’s late and you’ve eaten plenty. Wrap it up!";
+            "Getting late — a light snack might do.\n" :
+            "It’s late and you’ve eaten plenty. Wrap it up!\n";
+    }
+
+    let typeAdvice = '';
+
+    for (const group in groupTargets) {
+        const consumed = estimatedCaloriesByGroup[group];
+        const target = groupTargets[group];
+
+        if (consumed < target * 0.6) {
+            typeAdvice += `You're a bit low on ${group}, try adding some.\n`;
+        } else if (consumed > target * 1.2) {
+            typeAdvice += `You've gone a bit heavy on ${group}, consider easing up.\n`;
+        }
     }
 
     // Combine both time-based and food-related advice
-    advice.textContent = `${timeAdvice} ${foodAdvice}`.trim();
+    //advice.textContent = `${timeAdvice} ${foodAdvice} ${typeAdvice}`.trim();
+    advice.innerHTML = `${timeAdvice}\n${typeAdvice}`
+    .replace(/\n/g, '<br>')
+    .trim();
 }
 
 
