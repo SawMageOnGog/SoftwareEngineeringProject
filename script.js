@@ -98,7 +98,7 @@ function loadData() {
     updateFeedback();
     giveTimeBasedAdvice();
 }
-
+/*
 function authenticateUser(username, password) {
     const users = JSON.parse(localStorage.getItem('users')) || [];
 
@@ -137,6 +137,59 @@ function createNewUser(username, password) {
     alert('User created successfully! Please log in.');
     createUserModal.style.display = 'none'; // Close create user modal
     modal.style.display = 'flex';  // Show login modal
+}
+*/
+
+async function authenticateUser(username, password) {
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('username', username); // Temporary session storage
+
+            document.getElementById('loginModal').style.display = 'none';
+            initApp();  // Start your app
+            loadData(); // Load any saved calorie data
+
+        } else {
+            alert(data.message || 'Login failed.');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('There was an error during login.');
+    }
+}
+
+async function createNewUser(username, password) {
+    try {
+        const response = await fetch('/api/create-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),  // Send data as JSON
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('User created successfully!');
+            location.reload();  // Optionally reload the page
+        } else {
+            alert(data.message || 'Error creating user');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('There was an error creating the user.');
+    }
 }
 
 function checkForNewDay() {
