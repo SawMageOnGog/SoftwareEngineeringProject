@@ -360,3 +360,7 @@ body.dark-mode button[onclick="addEntry()"]:hover {
 .dark-mode .remove-btn:hover {
     background-color: #c0392b;
 }
+
+#feedback {
+    transition: font-size 0.3s ease, color 0.3s ease;
+}

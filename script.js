@@ -212,41 +212,25 @@ function resetTracker() {
 function addEntry() {
     const foodInput = document.getElementById('food');
     const caloriesInput = document.getElementById('calories');
-    const foodTypeSelect = document.getElementById('food-type');  // Get the selected food type
-    const entriesList = document.getElementById('entries');
+    const foodTypeSelect = document.getElementById('food-type');
 
     const food = foodInput.value.trim();
     const calories = parseInt(caloriesInput.value.trim());
-    const foodType = foodTypeSelect.value;  // Get the selected food type
+    const foodType = foodTypeSelect.value;
 
     if (!food || isNaN(calories)) return;
 
-    const entry = { food, calories, foodType, timestamp: Date.now() };  // Include foodType in entry
-    const entryItem = document.createElement('li');
-    entryItem.textContent = `${food}: ${calories} calories (${foodType})`;  // Display food type in entry
+    const timestamp = Date.now(); // Generate timestamp once
 
-    // Create Remove button
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'Remove';
-    removeBtn.classList.add('remove-btn');
-    removeBtn.onclick = function () {
-        if (confirm('Are you sure?')) {
-            entriesList.removeChild(entryItem);
-            removeEntryFromStorage(entry.timestamp);
-            updateTotals();
-        }
-    };
+    const entry = { food, calories, foodType, timestamp };
+    entries.push(entry);
+    totalCalories += calories;
 
-    entryItem.appendChild(removeBtn);
-    entriesList.appendChild(entryItem);
+    saveData();
+    displayEntries(); // This will now show the new entry correctly
+    updateTotals();
 
-    entries.push(entry);  // Add entry to the list
-    totalCalories += calories;  // Update total calories
-
-    saveData();  // Immediately save the data after adding a new entry
-    updateTotals();  // Update the totals on screen
-
-    foodInput.value = '';  // Clear input fields
+    foodInput.value = '';
     caloriesInput.value = '';
 }
 
@@ -254,27 +238,35 @@ function displayEntries() {
     const entriesList = document.getElementById('entries');
     entriesList.innerHTML = '';
 
+    totalCalories = 0;
+
     entries.forEach(entry => {
         const li = document.createElement('li');
         li.textContent = `${entry.food}: ${entry.calories} calories (${entry.foodType})`;
         li.setAttribute('data-food-type', entry.foodType);
 
+        totalCalories += entry.calories;
+
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Remove';
         removeBtn.classList.add('remove-btn');
-        removeBtn.onclick = () => {
+        removeBtn.onclick = function () {
             if (confirm('Are you sure?')) {
                 entries = entries.filter(e => e.timestamp !== entry.timestamp);
-                totalCalories -= entry.calories;
                 saveData();
-                displayEntries();
+                displayEntries();  // Re-render and recalculate
                 updateTotals();
             }
         };
+        
 
         li.appendChild(removeBtn);
         entriesList.appendChild(li);
     });
+
+    saveData();
+    updateTotals();
+    updateTotalCalories();
 }
 
 function updateTotals() {
