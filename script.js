@@ -297,6 +297,22 @@ function updateFeedback() {
     const feedback = document.getElementById('feedback');
     const caloriesLeft = dailyCalorieGoal - totalCalories;
 
+    if(totalCalories >= dailyCalorieGoal) {
+        const overage = totalCalories - dailyCalorieGoal;
+
+        // Cap the max font size so it doesn't get out of hand
+        const fontSize = Math.min(24 + overage * 0.05, 72); // start at 24px, grow by 0.05px per extra calorie, max at 72px
+
+        feedback.textContent = "STOP EATING BIG BACK! You’ve reached your calorie goal!";
+        feedback.style.fontSize = `${fontSize}px`;
+        feedback.style.color = "red";
+        feedback.style.fontWeight = "bold";
+    } else {
+
+    feedback.style.fontSize = "16px";
+    feedback.style.color = "";
+    feedback.style.fontWeight = "normal";
+
     // Incremental feedback based on total calories consumed
     if (totalCalories >= dailyCalorieGoal) {
         feedback.textContent = "STOP EATING BIG BACK! You’ve reached your calorie goal!";
@@ -319,7 +335,7 @@ function updateFeedback() {
     else {
         feedback.textContent = "Keep it up, you're doing great! You've just started your day — keep it balanced!";
     }
-
+ }
     // Update both time-based and food group-based advice
     giveTimeBasedAdvice();
 }
