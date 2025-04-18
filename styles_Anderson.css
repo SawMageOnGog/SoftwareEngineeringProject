@@ -1,0 +1,220 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+#input-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+    width: 200px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+ul#entries {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 580px;
+}
+
+ul#entries li {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    margin: 5px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+ul#entries li:hover {
+    background-color: #f0f0f0;
+}
+
+#feedback, #suggestedFoodGroup, #timeBasedAdvice {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#current-time, #time-left {
+    text-align: center;
+    margin-top: 10px;
+}
+
+#current-time p, #time-left p {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+p {
+    text-align: center;
+    font-size: 30px;
+}
+
+#time, #timeRemaining {
+    font-weight: bold;
+}
+
+.remove-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-btn:hover {
+    background-color: #c0392b;
+}
+
+#reset-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#reset-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #d35400;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#reset-btn:hover {
+    background-color: #e67e22;
+}
+
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.modal input {
+    padding: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: 80%;
+}
+
+.modal button {
+    padding: 0.5rem 1rem;
+}
+
+.modal input[type="password"] {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    width: 80%;
+}
+
+/* Style for different food types */
+li[data-food-type="Fruits"] {
+    background-color: #ffeb3b;  /* Yellow for fruits */
+}
+
+li[data-food-type="Vegetables"] {
+    background-color: #81c784;  /* Green for vegetables */
+}
+
+li[data-food-type="Protein"] {
+    background-color: #ff7043;  /* Orange for protein */
+}
+
+li[data-food-type="Grains"] {
+    background-color: #8d6e63;  /* Brown for grains */
+}
+
+li[data-food-type="Dairy"] {
+    background-color: #90caf9;  /* Blue for dairy */
+}
+
+li[data-food-type="Sweets"] {
+    background-color: #f48fb1;  /* Pink for sweets */
+}
+
+#header {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#username-display {
+    margin-right: 10px; /* Space between the username and logout button */
+    font-size: 16px;
+}
+
+#logoutBtn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #d35400;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#logoutBtn:hover {
+    background-color: #e67e22;
+}

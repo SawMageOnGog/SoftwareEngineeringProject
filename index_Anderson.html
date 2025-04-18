@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stop Eating Big Back</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Stop Eating Big Back</h1>
+    <div id="header"></div>
+        <span id="username-display"></span>
+    </div>
+    <div id="input-section">
+        <input type="text" id="food" placeholder="Food Item">
+        <input type="number" id="calories" placeholder="Calories">
+        <!-- Dropdown for Food Type -->
+        <select id="food-type">
+            <option value="Fruits">Fruits</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Protein">Protein</option>
+            <option value="Grains">Grains</option>
+            <option value="Dairy">Dairy</option>
+            <option value="Sweets">Sweets</option>
+        </select>
+        <button onclick="addEntry()">Add Entry</button>
+    </div>
+    <h2>Food You've Eaten Today</h2>
+    <ul id="entries"></ul>
+
+    <!-- Display Current Time -->
+    <div id="current-time">
+        <p>Current Time: <span id="time"></span></p>
+    </div>
+
+    <!-- Display Time Left Until Midnight -->
+    <div id="time-left">
+        <p>Time Left Until Midnight: <span id="timeRemaining"></span></p>
+    </div>
+
+    <!-- Feedback, Calories and Suggestions Sections -->
+    <div id="feedback"></div>
+    <div id="suggestedFoodGroup"></div>
+    <div id="timeBasedAdvice"></div>
+
+    <p>Total Calories: <span id="totalCalories">0</span></p>
+    <p>Calories Left: <span id="caloriesLeft">2000</span></p>
+
+    <div id="reset-section">
+        <button id="reset-btn">Reset Tracker</button>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Enter your username">
+            <input type="password" id="password" placeholder="Enter your password">
+            <button id="loginBtn">Login</button>
+            <button id="createAccountBtn">Create New Account</button>
+        </div>
+    </div>
+
+    <!-- Create New User Modal (Hidden by default) -->
+    <div id="createUserModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Create New User</h2>
+            <input type="text" id="newUsername" placeholder="Enter new username">
+            <input type="password" id="newPassword" placeholder="Enter password">
+            <button id="createUserBtn">Create User</button>
+            <button id="backToLoginBtn">Back to Login</button>
+        </div>
+    </div>
+    
+    <button id="logoutBtn">Logout</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
