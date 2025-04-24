@@ -193,7 +193,7 @@ li[data-food-type="Sweets"] {
 #header {
     position: fixed;
     top: 20px;
-    right: 115px;
+    right: 115px; /*20?*/
     font-size: 18px;
     font-weight: bold;
     align-items: center;
@@ -296,6 +296,12 @@ body.dark-mode {
     border: 1px solid #555;
 }
 
+.dark-mode .modal-content {
+    background-color: rgba(18, 18, 18, 0.95);
+    color: #fff;
+    border: 1px solid #555; 
+}
+
 /* Headings and labels */
 .dark-mode h1, .dark-mode h2, .dark-mode h3,
 .dark-mode label {
@@ -305,12 +311,12 @@ body.dark-mode {
 /* Borders and outlines */
 .dark-mode .container,
 .dark-mode .card,
-.dark-mode .panel {
+.dark-mode .panel,
+.dark-mode .loginModal {
     background-color: #1a1a1a;
     border: 1px solid #444;
 }
 
-/* Optional: Adjust links if you use any */
 .dark-mode a {
     color: #90caf9;
 }

@@ -1,15 +1,17 @@
 let entries = [];
 let totalCalories = 0;
 const dailyCalorieGoal = 2000;
+const modal = document.getElementById('loginModal');
 
+// DOMContentLoaded event listener to initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('loginModal');
     const createUserModal = document.getElementById('createUserModal');
     const loginBtn = document.getElementById('loginBtn');
     const createAccountBtn = document.getElementById('createAccountBtn');
     const backToLoginBtn = document.getElementById('backToLoginBtn');
     const createUserBtn = document.getElementById('createUserBtn');
-
+    
+/*
     // Check if the user is already logged in
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
@@ -18,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         modal.style.display = 'flex'; // Show login modal
     }
-
+*/
     // Show the create new user modal when "Create New Account" is clicked
     createAccountBtn.addEventListener('click', () => {
         modal.style.display = 'none';  // Hide login modal
@@ -54,8 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please enter a username and password.');
         }
     });
+
+    // Check if a token exists and initialize the app if logged in
+    const token = getCookie("authToken");
+    if (token) {
+        modal.style.display = 'none';
+        initApp();
+    } else {
+        modal.style.display = 'flex';
+    }
 });
 
+// Initialize the app after login
 function initApp() {
     const username = localStorage.getItem('username');
     if (username) {
@@ -69,6 +81,7 @@ function initApp() {
     }
 }
 
+// Helper function to save data to localStorage
 function saveData() {
     const username = localStorage.getItem('username');
     if (!username) return;  // Ensure the user is logged in before saving data
@@ -78,6 +91,7 @@ function saveData() {
     localStorage.setItem(`${username}-totalCalories`, totalCalories.toString());
 }
 
+// Load user-specific data from localStorage
 function loadData() {
     const username = localStorage.getItem('username');
     if (!username) return;
@@ -93,7 +107,7 @@ function loadData() {
 
     // Display the loaded entries and update the totals
     displayEntries();
-    updateTotalCalories();
+    updateTotals();
     updateCaloriesLeft();
     updateFeedback();
     giveTimeBasedAdvice();
@@ -140,6 +154,7 @@ function createNewUser(username, password) {
 }
 */
 
+// Authenticate user with the backend (via API)
 async function authenticateUser(username, password) {
     try {
         const response = await fetch('/api/login', {
@@ -153,12 +168,17 @@ async function authenticateUser(username, password) {
         const data = await response.json();
 
         if (response.ok) {
+            document.cookie = `authToken=${data.token}; path=/; secure`;
+            modal.style.display = 'none';
+            initApp();
+            loadData();
+            /*
             localStorage.setItem('username', username); // Temporary session storage
 
             document.getElementById('loginModal').style.display = 'none';
             initApp();  // Start your app
             loadData(); // Load any saved calorie data
-
+            */
         } else {
             alert(data.message || 'Login failed.');
         }
@@ -168,6 +188,7 @@ async function authenticateUser(username, password) {
     }
 }
 
+// Create new user via backend API
 async function createNewUser(username, password) {
     try {
         const response = await fetch('/api/create-user', {
@@ -182,7 +203,8 @@ async function createNewUser(username, password) {
 
         if (response.ok) {
             alert('User created successfully!');
-            location.reload();  // Optionally reload the page
+            modal.style.display = 'flex';
+            //location.reload();  // Optionally reload the page
         } else {
             alert(data.message || 'Error creating user');
         }
@@ -192,6 +214,14 @@ async function createNewUser(username, password) {
     }
 }
 
+// Helper function to get cookies by name
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Check if it's a new day and reset tracker if necessary
 function checkForNewDay() {
     const lastResetDate = localStorage.getItem('lastResetDate');
     const currentDate = new Date().toISOString().split('T')[0];
@@ -209,31 +239,7 @@ function resetTracker() {
     updateTotals();
 }
 
-function addEntry() {
-    const foodInput = document.getElementById('food');
-    const caloriesInput = document.getElementById('calories');
-    const foodTypeSelect = document.getElementById('food-type');
-
-    const food = foodInput.value.trim();
-    const calories = parseInt(caloriesInput.value.trim());
-    const foodType = foodTypeSelect.value;
-
-    if (!food || isNaN(calories)) return;
-
-    const timestamp = Date.now(); // Generate timestamp once
-
-    const entry = { food, calories, foodType, timestamp };
-    entries.push(entry);
-    totalCalories += calories;
-
-    saveData();
-    displayEntries(); // This will now show the new entry correctly
-    updateTotals();
-
-    foodInput.value = '';
-    caloriesInput.value = '';
-}
-
+// Display food entries and their details
 function displayEntries() {
     const entriesList = document.getElementById('entries');
     entriesList.innerHTML = '';
@@ -253,13 +259,13 @@ function displayEntries() {
         removeBtn.onclick = function () {
             if (confirm('Are you sure?')) {
                 entries = entries.filter(e => e.timestamp !== entry.timestamp);
+                totalCalories -= entry.calories;
                 saveData();
                 displayEntries();  // Re-render and recalculate
                 updateTotals();
             }
         };
         
-
         li.appendChild(removeBtn);
         entriesList.appendChild(li);
     });
@@ -269,6 +275,31 @@ function displayEntries() {
     updateTotalCalories();
 }
 
+// Add a new food entry
+function addEntry() {
+    const foodInput = document.getElementById('food');
+    const caloriesInput = document.getElementById('calories');
+    const foodTypeSelect = document.getElementById('food-type');
+
+    const food = foodInput.value.trim();
+    const calories = parseInt(caloriesInput.value.trim());
+    const foodType = foodTypeSelect.value;
+
+    if (!food || isNaN(calories)) return;
+
+    const entry = { food, calories, foodType, timestamp: Date.now() };
+    entries.push(entry);
+    totalCalories += calories;
+
+    saveData();
+    displayEntries(); // This will now show the new entry correctly
+    updateTotals();
+
+    foodInput.value = '';
+    caloriesInput.value = '';
+}
+
+// Update displayed totals for calories
 function updateTotals() {
     updateTotalCalories();
     updateCaloriesLeft();
@@ -276,15 +307,18 @@ function updateTotals() {
     giveTimeBasedAdvice();
 }
 
+// Update total calories
 function updateTotalCalories() {
     document.getElementById('totalCalories').textContent = totalCalories;
 }
 
+// Update remaining calories
 function updateCaloriesLeft() {
     const left = dailyCalorieGoal - totalCalories;
     document.getElementById('caloriesLeft').textContent = left >= 0 ? left : 0;
 }
 
+// Provide feedback based on calorie consumption
 function updateFeedback() {
     const feedback = document.getElementById('feedback');
     const caloriesLeft = dailyCalorieGoal - totalCalories;
@@ -332,6 +366,7 @@ function updateFeedback() {
     giveTimeBasedAdvice();
 }
 
+// Provide time-based advice
 function giveTimeBasedAdvice() {
     const advice = document.getElementById('timeBasedAdvice');
     const currentHour = new Date().getHours();
@@ -449,9 +484,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Logout functionality
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
-    localStorage.removeItem('username');
-    location.reload();  // Force logout and reload
+    document.cookie = 'authToken=; Max-Age=0; path=/';  // Remove auth token cookie
+    location.reload(); // Reload the page to prompt for login again
+    /*localStorage.removeItem('username');
+    location.reload();  // Force logout and reload*/
 });
 
 document.getElementById('createUserBtn').addEventListener('click', () => {
@@ -465,13 +503,14 @@ document.getElementById('createUserBtn').addEventListener('click', () => {
     }
 });
 
+// Dark mode toggle
 document.getElementById('darkModeToggle').addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
     const isDark = document.body.classList.contains('dark-mode');
     localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
 });
 
-// Load dark mode from localStorage
+// Load dark mode preference from localStorage
 if (localStorage.getItem('darkMode') === 'enabled') {
     document.body.classList.add('dark-mode');
 }

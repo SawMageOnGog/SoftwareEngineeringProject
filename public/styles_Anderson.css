@@ -193,7 +193,7 @@ li[data-food-type="Sweets"] {
 #header {
     position: fixed;
     top: 20px;
-    right: 20px;
+    right: 115px; /*20?*/
     font-size: 18px;
     font-weight: bold;
     align-items: center;
@@ -213,8 +213,160 @@ li[data-food-type="Sweets"] {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    position: fixed;
+    top: 15px;
+    right: 20px;
+}
+
+#darkModeToggle {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #d35400;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position: fixed;
+    top: 15px;
+    left: 20px;
 }
 
 #logoutBtn:hover {
     background-color: #e67e22;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: #f0f0f0;
+}
+
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #444;
+}
+
+.dark-mode button {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-mode li {
+    background-color: #1c1c1c;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+/* Feedback and advice sections */
+.dark-mode #feedback,
+.dark-mode #timeBasedAdvice,
+.dark-mode ul#entries {
+    width: 580px;
+    list-style: none;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.dark-mode ul#entries li {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    margin: 5px;
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    font-size: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Modals */
+.dark-mode .modal {
+    background-color: rgba(18, 18, 18, 0.95);
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-mode .modal-content {
+    background-color: rgba(18, 18, 18, 0.95);
+    color: #fff;
+    border: 1px solid #555; 
+}
+
+/* Headings and labels */
+.dark-mode h1, .dark-mode h2, .dark-mode h3,
+.dark-mode label {
+    color: #f0f0f0;
+}
+
+/* Borders and outlines */
+.dark-mode .container,
+.dark-mode .card,
+.dark-mode .panel,
+.dark-mode .loginModal {
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+}
+
+.dark-mode a {
+    color: #90caf9;
+}
+
+.dark-mode a:hover {
+    color: #bbdefb;
+}
+
+button[onclick="addEntry()"] {
+    background-color: #d35400;  /* Green */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+button[onclick="addEntry()"]:hover {
+    background-color: #e67e22;
+}
+
+/* Dark mode overrides */
+body.dark-mode button[onclick="addEntry()"] {
+    background-color: #d35400;
+    color: white;
+    border: 1px solid #666;
+}
+
+body.dark-mode button[onclick="addEntry()"]:hover {
+    background-color: #e67e22;
+}
+
+.dark-mode .remove-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dark-mode .remove-btn:hover {
+    background-color: #c0392b;
+}
+
+#feedback {
+    transition: font-size 0.3s ease, color 0.3s ease;
 }
