@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const createAccountBtn = document.getElementById('createAccountBtn');
     const backToLoginBtn = document.getElementById('backToLoginBtn');
     const createUserBtn = document.getElementById('createUserBtn');
-    
-/*
+
+
     // Check if the user is already logged in
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         modal.style.display = 'flex'; // Show login modal
     }
-*/
+
     // Show the create new user modal when "Create New Account" is clicked
     createAccountBtn.addEventListener('click', () => {
         modal.style.display = 'none';  // Hide login modal
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please enter a username and password.');
         }
     });
-
+/*
     // Check if a token exists and initialize the app if logged in
     const token = getCookie("authToken");
     if (token) {
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initApp();
     } else {
         modal.style.display = 'flex';
-    }
+    }*/
 });
 
 // Initialize the app after login
@@ -82,27 +82,31 @@ function initApp() {
 }
 
 // Helper function to save data to localStorage
+// Function to save user data to localStorage
 function saveData() {
     const username = localStorage.getItem('username');
     if (!username) return;  // Ensure the user is logged in before saving data
 
     // Save entries and total calories for the logged-in user
-    localStorage.setItem(`${username}-entries`, JSON.stringify(entries));
-    localStorage.setItem(`${username}-totalCalories`, totalCalories.toString());
+    localStorage.setItem(`${username}-foodEntries`, JSON.stringify(entries));  // Save food entries specific to the user
+    localStorage.setItem(`${username}-totalCalories`, totalCalories.toString());  // Save total calories specific to the user
 }
 
-// Load user-specific data from localStorage
+// Function to load user-specific data from localStorage
 function loadData() {
     const username = localStorage.getItem('username');
-    if (!username) return;
+    if (!username) return;  // If no user is logged in, skip loading
 
     // Load the entries and total calories for the logged-in user
-    const savedEntries = localStorage.getItem(`${username}-entries`);
+    const savedEntries = localStorage.getItem(`${username}-foodEntries`);
     const savedTotalCalories = localStorage.getItem(`${username}-totalCalories`);
 
     if (savedEntries) {
-        entries = JSON.parse(savedEntries);
-        totalCalories = parseInt(savedTotalCalories);
+        entries = JSON.parse(savedEntries);  // Load the entries
+    }
+
+    if (savedTotalCalories) {
+        totalCalories = parseInt(savedTotalCalories);  // Load the total calories
     }
 
     // Display the loaded entries and update the totals
@@ -112,7 +116,7 @@ function loadData() {
     updateFeedback();
     giveTimeBasedAdvice();
 }
-/*
+
 function authenticateUser(username, password) {
     const users = JSON.parse(localStorage.getItem('users')) || [];
 
@@ -152,8 +156,8 @@ function createNewUser(username, password) {
     createUserModal.style.display = 'none'; // Close create user modal
     modal.style.display = 'flex';  // Show login modal
 }
-*/
 
+/*
 // Authenticate user with the backend (via API)
 async function authenticateUser(username, password) {
     try {
@@ -178,7 +182,7 @@ async function authenticateUser(username, password) {
             document.getElementById('loginModal').style.display = 'none';
             initApp();  // Start your app
             loadData(); // Load any saved calorie data
-            */
+            Needa*forthis/
         } else {
             alert(data.message || 'Login failed.');
         }
@@ -213,14 +217,15 @@ async function createNewUser(username, password) {
         alert('There was an error creating the user.');
     }
 }
-
+*/
 // Helper function to get cookies by name
+/*
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
-
+*/
 // Check if it's a new day and reset tracker if necessary
 function checkForNewDay() {
     const lastResetDate = localStorage.getItem('lastResetDate');
@@ -276,7 +281,7 @@ function displayEntries() {
 }
 
 // Add a new food entry
-function addEntry() {
+/*function addEntry() {
     const foodInput = document.getElementById('food');
     const caloriesInput = document.getElementById('calories');
     const foodTypeSelect = document.getElementById('food-type');
@@ -297,7 +302,64 @@ function addEntry() {
 
     foodInput.value = '';
     caloriesInput.value = '';
+}*/
+
+function addEntry() {
+    const dropdown = document.getElementById("foodDropdown");
+    const customInput = document.getElementById("customFoodInput");
+    const calorieInput = document.getElementById("calorieInput");
+
+    let foodName = "";
+    let calories = parseInt(calorieInput.value);
+    let foodType = "";
+
+    if (dropdown.value === "Custom") {
+        foodName = customInput.value.trim();
+    } else {
+        foodName = dropdown.value;
+        const selectedOption = dropdown.options[dropdown.selectedIndex];
+        foodType = selectedOption.parentElement.label;  // Gets optgroup label as food type
+    }
+
+    if (!foodName || isNaN(calories)) {
+        alert("Please enter a valid food and calorie amount.");
+        return;
+    }
+
+    const entryList = document.getElementById("entries");
+
+    const li = document.createElement("li");
+    li.setAttribute("data-food-type", foodType || "Custom");
+    li.innerHTML = `${foodName} - ${calories} cal`;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = function () {
+        entryList.removeChild(li);
+        saveData();
+        displayEntries();
+        updateTotals();
+    };
+
+    li.appendChild(removeBtn);
+    entryList.appendChild(li);
+
+    entries.push({ food: foodName, calories, foodType, timestamp: Date.now() });
+
+    totalCalories += calories;
+
+    saveData();
+    displayEntries();
+    updateTotals();
+
+    // Reset inputs
+    dropdown.selectedIndex = 0;
+    customInput.value = "";
+    customInput.style.display = "none";
+    calorieInput.value = "";
 }
+
 
 // Update displayed totals for calories
 function updateTotals() {
@@ -486,10 +548,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Logout functionality
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    /*
     document.cookie = 'authToken=; Max-Age=0; path=/';  // Remove auth token cookie
-    location.reload(); // Reload the page to prompt for login again
-    /*localStorage.removeItem('username');
-    location.reload();  // Force logout and reload*/
+    location.reload(); // Reload the page to prompt for login again*/
+    localStorage.removeItem('username');
+    location.reload();  // Force logout and reload
 });
 
 document.getElementById('createUserBtn').addEventListener('click', () => {
@@ -514,3 +577,41 @@ document.getElementById('darkModeToggle').addEventListener('click', () => {
 if (localStorage.getItem('darkMode') === 'enabled') {
     document.body.classList.add('dark-mode');
 }
+
+function handleFoodSelection() {
+    const dropdown = document.getElementById("foodDropdown");
+    const customInput = document.getElementById("customFoodInput");
+    
+    if (dropdown.value === "Custom") {
+        customInput.style.display = "inline-block";
+    } else {
+        customInput.style.display = "none";
+        customInput.value = ""; // Clear custom input
+    }
+}
+
+function getSelectedFood() {
+    const dropdown = document.getElementById("foodDropdown");
+    const customInput = document.getElementById("customFoodInput");
+
+    return dropdown.value === "Custom" ? customInput.value.trim() : dropdown.value;
+}
+
+document.getElementById("foodDropdown").addEventListener("change", function () {
+    const selectedOption = this.options[this.selectedIndex];
+    const calorieInput = document.getElementById("calorieInput");
+    const customInput = document.getElementById("customFoodInput");
+    const groupInput = document.getElementById("food-type");
+
+    if (this.value === "Custom") {
+        customInput.style.display = "inline-block";
+        calorieInput.value = "";
+        groupInput.value = "Fruits";
+    } else {
+        customInput.style.display = "none";
+        const calories = selectedOption.getAttribute("data-calories");
+        const group = selectedOption.getAttribute("data-group");
+        calorieInput.value = calories || "";
+        groupInput.value = group;
+    }
+});

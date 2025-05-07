@@ -14,16 +14,46 @@
     <button id="logoutBtn">Logout</button>
     <button id="darkModeToggle">Toggle Dark Mode</button>
     <div id="input-section">
-        <input type="text" id="food" placeholder="Food Item">
-        <input type="number" id="calories" placeholder="Calories">
-        <!-- Dropdown for Food Type -->
-        <select id="food-type">
+        <select id="foodDropdown" onchange="handleFoodSelection()">
+            <option value="">-- Select food --</option>
+            <optgroup label="Fruits">
+              <option value="Apple" data-calories="95" data-group="Fruits">Apple</option>
+              <option value="Banana" data-calories="105" data-group="Fruits">Banana</option>
+            </optgroup>
+            <optgroup label="Vegetables">
+              <option value="Carrot" data-calories="25" data-group="Vegetables">Carrot</option>
+              <option value="Broccoli" data-calories="55" data-group="Vegetables">Broccoli</option>
+            </optgroup>
+            <optgroup label="Protein">
+              <option value="Chicken" data-calories="165" data-group="Protein">Chicken</option>
+              <option value="Eggs" data-calories="78" data-group="Protein">Eggs</option>
+            </optgroup>
+            <optgroup label="Grains">
+              <option value="Rice" data-calories="206" data-group="Grains">Rice</option>
+              <option value="Bread" data-calories="79" data-group="Grains">Bread</option>
+            </optgroup>
+            <optgroup label="Dairy">
+              <option value="Milk" data-calories="103" data-group="Dairy">Milk</option>
+              <option value="Yogurt" data-calories="59" data-group="Dairy">Yogurt</option>
+            </optgroup>
+            <optgroup label="Sweets">
+              <option value="Cookie" data-calories="160" data-group="Sweets">Cookie</option>
+              <option value="Cake" data-calories="235" data-group="Sweets">Cake</option>
+            </optgroup>
+            <option value="Custom">Custom</option>
+          </select>
+          
+          <input type="text" id="customFoodInput" placeholder="Enter custom food" style="display:none;" />
+          <input type="number" id="calorieInput" placeholder="Calories" />
+          <select id="food-type">
             <option value="Fruits">Fruits</option>
             <option value="Vegetables">Vegetables</option>
             <option value="Protein">Protein</option>
             <option value="Grains">Grains</option>
             <option value="Dairy">Dairy</option>
             <option value="Sweets">Sweets</option>
+        </select>
+          
         </select>
         <button onclick="addEntry()">Add Entry</button>
     </div>
