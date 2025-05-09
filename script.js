@@ -615,3 +615,4 @@ document.getElementById("foodDropdown").addEventListener("change", function () {
         groupInput.value = group;
     }
 });
+//END
